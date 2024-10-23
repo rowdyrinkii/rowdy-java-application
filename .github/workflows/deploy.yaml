@@ -19,7 +19,7 @@ jobs:
       - name: Connect to Bastion Host
         env:
           BASTION_PRIVATE_KEY: ${{ secrets.BASTION_PVT_KEY }}
-        run: 
+        run: |
           echo "Connecting to Bastion Host..."
           mkdir -p ~/.ssh
           echo "$BASTION_PRIVATE_KEY" > ~/.ssh/bastion_key.pem
