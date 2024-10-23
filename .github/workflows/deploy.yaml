@@ -26,14 +26,14 @@ jobs:
           chmod 600 ~/.ssh/bastion_key.pem
           ssh -i ~/.ssh/bastion_key.pem -o StrictHostKeyChecking=no ec2-user@13.232.207.168 << 'EOF'
             echo "Creating test file on Bastion..."
-            echo "This is the test file created using github actions on bastion" > /home/ec2-user/testr01.txt 
+            echo "This is the test file created using github actions on bastion" > /home/ec2-user/testr02.txt 
 
             # Connect to the target EC2 instance
-            TARGET_HOST=11.0.3.34
+            TARGET_HOST=${{ vars.TARGET_HOST_1 }}   #11.0.3.34
             TARGET_KEY="/home/ec2-user/vpc-endpoint.pem"  
             
             echo "Connecting to Target EC2 instance..."
             ssh -i "$TARGET_KEY" -o StrictHostKeyChecking=no ec2-user@$TARGET_HOST << EOT
               echo "Creating test file on Target EC2..."
-              echo "This is the test file created using GitHub Actions on the target EC2 instance" > /home/ec2-user/target_file_r01.txt
+              echo "This is the test file created using GitHub Actions on the target EC2 instance" > /home/ec2-user/target_file_r02.txt
           EOF
