@@ -20,16 +20,17 @@ jobs:
           mkdir -p ~/.ssh
           echo "$BASTION_PRIVATE_KEY" > ~/.ssh/bastion_key.pem
           chmod 600 ~/.ssh/bastion_key.pem
-          ssh -i ~/.ssh/bastion_key.pem -o StrictHostKeyChecking=no ubuntu@3.108.189.7 << 'EOF'
+          ssh -i ~/.ssh/bastion_key.pem -o StrictHostKeyChecking=no github_actions_yabx@3.108.189.7 << 'EOF'
             echo "Creating test file on Bastion..."
-            echo "This is the test file created using github actions on bastion" > /home/ec2-user/testr02.txt 
+            echo "This is the test file created using github actions on bastion" > /home/github_actions_yabx/testr02.txt 
 
             # Connect to the target EC2 instance
             TARGET_HOST=${{ vars.TARGET_HOST_R }}   #11.0.3.34
-            TARGET_KEY="/home/ec2-user/vpc-endpoint.pem"  
+            #TARGET_KEY="/home/ec2-user/vpc-endpoint.pem"  
+            TARGET_KEY="/home/github_actions_yabx/Demo_server.pem
             
             echo "Connecting to Target EC2 instance..."
-            ssh -i "$TARGET_KEY" -o StrictHostKeyChecking=no ec2-user@$TARGET_HOST << EOT
+            ssh -i "$TARGET_KEY" -o StrictHostKeyChecking=no ubuntu@$TARGET_HOST << EOT
               echo "Creating test file on Target EC2..."
-              echo "This is the test file created using GitHub Actions on the target EC2 instance" > /home/ec2-user/target_file_r02.txt
+              echo "This is the test file created using GitHub Actions on the target EC2 instance" > /home/ubuntu/target_file_r02.txt
           EOF
