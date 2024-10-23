@@ -29,16 +29,19 @@ jobs:
           BASTION_PRIVATE_KEY: ${{ secrets.BASTION_PVT_KEY }}  # Private key for the Bastion host
           TARGET_HOST: 11.0.3.34 #${{ secrets.TARGET_HOST }}  # Private IP of the target EC2
           TARGET_USER: ec2-user #${{ secrets.TARGET_USER }}  # User for the target EC2
-          TARGET_KEY: ${{ secrets.BASTION_PVT_KEY }}  # Private key for the target instance
+          #TARGET_KEY: ${{ secrets.BASTION_PVT_KEY }}  # Private key for the target instance
+          TARGET_KEY: "/home/ec2-user/vpc-endpoint.pem" 
         run: |
           mkdir -p ~/.ssh
           echo "${BASTION_PRIVATE_KEY}" > ~/.ssh/bastion_key.pem
           chmod 600 ~/.ssh/bastion_key.pem
-          
+          echo "connecting to bastion"
           # Copy the built JAR file to the target EC2 instance via Bastion
           ssh -i ~/.ssh/bastion_key.pem -o StrictHostKeyChecking=no ${BASTION_USER}@${BASTION_HOST} << 'EOF'
             # Create necessary directories on target instance
+            echo "connecting to target"
             ssh -i "${TARGET_KEY}" -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} "mkdir -p /var/www/my-app/"
-            scp -i "${TARGET_KEY}" -o StrictHostKeyChecking=no /home/runner/work/<YOUR_REPO_NAME>/target/*.jar ${TARGET_USER}@${TARGET_HOST}:/var/www/my-app/
+            echo "copying jar from runner to target ec2"
+            scp -i "${TARGET_KEY}" -o StrictHostKeyChecking=no /home/runner/work/rowdyrinkii/rowdy-java-application-microservice-1/target/*.jar ${TARGET_USER}@${TARGET_HOST}:/var/www/my-app/
             ssh -i "${TARGET_KEY}" -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} "java -jar /var/www/my-app/your-app.jar &"
           EOF
