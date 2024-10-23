@@ -27,7 +27,7 @@ jobs:
             # Connect to the target EC2 instance
             TARGET_HOST=${{ vars.TARGET_HOST_R }}   #11.0.3.34
             #TARGET_KEY="/home/ec2-user/vpc-endpoint.pem"  
-            TARGET_KEY="/home/github_actions_yabx/Demo_server.pem
+            TARGET_KEY="/home/github_actions_yabx/Demo_server.pem"
             
             echo "Connecting to Target EC2 instance..."
             ssh -i "$TARGET_KEY" -o StrictHostKeyChecking=no ubuntu@$TARGET_HOST << EOT
