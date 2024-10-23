@@ -1,36 +1,44 @@
-name: Connect to Servers
+name: Deploy Java App to Private EC2
+
 on:
   push:
     branches:
-      - github-actions-rinki
+      - java-deploy-github-actions
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Connect to Bastion Host
-        env:
-          BASTION_PRIVATE_KEY: ${{ secrets.BASTION_PVT_KEY_R }}
-        run: |
-          echo "Connecting to Bastion Host..."
-          mkdir -p ~/.ssh
-          echo "$BASTION_PRIVATE_KEY" > ~/.ssh/bastion_key.pem
-          chmod 600 ~/.ssh/bastion_key.pem
-          ssh -i ~/.ssh/bastion_key.pem -o StrictHostKeyChecking=no github_actions_yabx@3.108.189.7 << 'EOF'
-            echo "Creating test file on Bastion..."
-            echo "This is the test file created using github actions on bastion" > /home/github_actions_yabx/testr02.txt 
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-            # Connect to the target EC2 instance
-            TARGET_HOST=${{ vars.TARGET_HOST_R }}   #11.0.3.34
-            #TARGET_KEY="/home/ec2-user/vpc-endpoint.pem"  
-            TARGET_KEY="/home/github_actions_yabx/Demo_server.pem"
-            
-            echo "Connecting to Target EC2 instance..."
-            ssh -i "$TARGET_KEY" -o StrictHostKeyChecking=no ubuntu@$TARGET_HOST << EOT
-              echo "Creating test file on Target EC2..."
-              echo "This is the test file created using GitHub Actions on  target EC2 instance" > /home/ubuntu/target_file_r02.txt
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Connect to Bastion and Deploy to Target EC2
+        env:
+          BASTION_HOST: 13.232.207.168 #${{ secrets.BASTION_HOST }}  # Public IP or DNS of the Bastion
+          BASTION_USER: ec2-user #${{ secrets.BASTION_USER }}  # User for the Bastion host
+          BASTION_PRIVATE_KEY: ${{ secrets.BASTION_PVT_KEY }}  # Private key for the Bastion host
+          TARGET_HOST: 11.0.3.34 #${{ secrets.TARGET_HOST }}  # Private IP of the target EC2
+          TARGET_USER: ec2-user #${{ secrets.TARGET_USER }}  # User for the target EC2
+          TARGET_KEY: ${{ secrets.BASTION_PVT_KEY }}  # Private key for the target instance
+        run: |
+          mkdir -p ~/.ssh
+          echo "${BASTION_PRIVATE_KEY}" > ~/.ssh/bastion_key.pem
+          chmod 600 ~/.ssh/bastion_key.pem
+          
+          # Copy the built JAR file to the target EC2 instance via Bastion
+          ssh -i ~/.ssh/bastion_key.pem -o StrictHostKeyChecking=no ${BASTION_USER}@${BASTION_HOST} << 'EOF'
+            # Create necessary directories on target instance
+            ssh -i "${TARGET_KEY}" -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} "mkdir -p /var/www/my-app/"
+            scp -i "${TARGET_KEY}" -o StrictHostKeyChecking=no /home/runner/work/<YOUR_REPO_NAME>/target/*.jar ${TARGET_USER}@${TARGET_HOST}:/var/www/my-app/
+            ssh -i "${TARGET_KEY}" -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} "java -jar /var/www/my-app/your-app.jar &"
           EOF
