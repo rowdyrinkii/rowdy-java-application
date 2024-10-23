@@ -24,7 +24,7 @@ jobs:
 
       - name: Connect to Bastion and Deploy to Target EC2
         env:
-          BASTION_HOST: 13.232.207.168 #${{ secrets.BASTION_HOST }}  # Public IP or DNS of the Bastion
+          BASTION_HOST: 43.205.139.186 #13.232.207.168 #${{ secrets.BASTION_HOST }}  # Public IP or DNS of the Bastion
           BASTION_USER: ec2-user #${{ secrets.BASTION_USER }}  # User for the Bastion host
           BASTION_PRIVATE_KEY: ${{ secrets.BASTION_PVT_KEY }}  # Private key for the Bastion host
           TARGET_HOST: 11.0.3.34 #${{ secrets.TARGET_HOST }}  # Private IP of the target EC2
