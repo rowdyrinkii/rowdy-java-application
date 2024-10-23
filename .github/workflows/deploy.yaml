@@ -32,5 +32,5 @@ jobs:
             echo "Connecting to Target EC2 instance..."
             ssh -i "$TARGET_KEY" -o StrictHostKeyChecking=no ubuntu@$TARGET_HOST << EOT
               echo "Creating test file on Target EC2..."
-              echo "This is the test file created using GitHub Actions on the target EC2 instance" > /home/ubuntu/target_file_r02.txt
+              echo "This is the test file created using GitHub Actions on  target EC2 instance" > /home/ubuntu/target_file_r02.txt
           EOF
