@@ -40,7 +40,7 @@ jobs:
           echo "connecting to bastion"
           echo " target host is $TARGET_HOST_1"
           # Copy the built JAR file to the target EC2 instance via Bastion
-          ssh -i ~/.ssh/bastion_key.pem -o StrictHostKeyChecking=no ${BASTION_USER}@${BASTION_HOST} << 'EOF'
+          ssh -i ~/.ssh/bastion_key.pem -o StrictHostKeyChecking=no ${BASTION_USER}@${TARGET_HOST_1} << 'EOF'
             # Create necessary directories on target instance
             echo "connecting to target"
             ssh -i "${TARGET_KEY}" -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} "mkdir -p /var/www/my-app/"
