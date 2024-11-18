@@ -33,6 +33,7 @@ jobs:
           #TARGET_KEY: ${{ secrets.BASTION_PVT_KEY }}  # Private key for the target instance
           TARGET_KEY: "/home/ec2-user/vpc-endpoint.pem" 
         run: |
+          printenv
           mkdir -p ~/.ssh
           echo "${BASTION_PRIVATE_KEY}" > ~/.ssh/bastion_key.pem
           chmod 600 ~/.ssh/bastion_key.pem
